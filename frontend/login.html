@@ -91,6 +91,9 @@
                     loginStatus.className = "success";
                     
                     localStorage.setItem("loggedInUser", username);
+                    if (data.token) {
+                        localStorage.setItem("authToken", data.token);
+                    }
                     
                     // Redirect after a brief delay
                     setTimeout(() => {

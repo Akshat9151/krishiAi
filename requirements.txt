@@ -2,4 +2,8 @@ fastapi
 uvicorn
 requests
 pandas
+python-dotenv
+mysql-connector-python
+passlib[bcrypt]
+PyJWT
 

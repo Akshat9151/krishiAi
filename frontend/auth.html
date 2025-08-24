@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Krishi AI – Farmer Login</title>
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2 id="formTitle">👨‍🌾 Farmer Login</h2>
+      <form id="authForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit" id="authBtn">Login</button>
+      </form>
+      <p id="toggleText">Don't have an account? <span onclick="toggleForm()">Register</span></p>
+      <div id="authMessage"></div>
+    </div>
+  </div>
+
+  <script>
+    let isLogin = true;
+
+    const toggleForm = () => {
+      isLogin = !isLogin;
+      document.getElementById("formTitle").innerText = isLogin ? "👨‍🌾 Farmer Login" : "📝 Register Farmer";
+      document.getElementById("authBtn").innerText = isLogin ? "Login" : "Register";
+      document.getElementById("toggleText").innerHTML = isLogin
+        ? `Don't have an account? <span onclick="toggleForm()">Register</span>`
+        : `Already registered? <span onclick="toggleForm()">Login</span>`;
+      document.getElementById("authMessage").innerText = "";
+    };
+
+    document.getElementById("authForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      const url = isLogin ? "/login" : "/register";
+      const res = await fetch(`http://127.0.0.1:8000${url}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      const msgDiv = document.getElementById("authMessage");
+
+      if (res.ok) {
+        msgDiv.innerHTML = `<span style="color: green;">✅ ${data.message}</span>`;
+        if (isLogin) {
+          // Redirect or show dashboard
+          setTimeout(() => window.location.href = "index.html", 1000);
+        }
+      } else {
+        msgDiv.innerHTML = `<span style="color: red;">❌ ${data.detail}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.env
+*.sqlite3
+*.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Frontend build/static
+frontend/statics/
+frontend/node_modules/
+
+# Backend
+backend/__pycache__/
+backend/model/*.pkl
+backend/data/test/
+backend/data/Train/
+
+# Misc
+*.bak
+*.swp
+
+# Ignore users data
+users/users.json
+
+# Shell scripts
+run.sh
+
+# Ignore compiled files
+services/__pycache__/
+
+# Ignore database dumps
+*.sql
+
+# Ignore media
+frontend/statics/images/*.mp4
+frontend/statics/images/*.jpg
+frontend/statics/images/*.png

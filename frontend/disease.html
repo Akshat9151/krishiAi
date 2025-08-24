@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Disease & Fertilizer | Krishi AI</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+
+  <!-- 🟢 HEADER -->
+  <header class="navbar">
+    <div class="left-header">
+      <img src="statics/images/logo.jpg" class="logo" alt="Krishi AI Logo" />
+      <div class="title">
+        <h1>Krishi AI</h1>
+        <p>Your Smart Agriculture Assistant</p>
+      </div>
+    </div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="disease.html">Disease</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+     <video autoplay muted loop class="header-video">
+    <source src="statics/images/krishi ai video.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+  </header>
+
+  <!-- 🌍 LANGUAGE SWITCHER -->
+  <div id="google_translate_element" style="text-align: right; padding: 10px;"></div>
+
+  <!-- 🧠 MAIN CONTENT -->
+  <main>
+    <h2>🌾 Crop Disease & Fertilizer Recommendation</h2>
+
+    <!-- 🦠 Crop Disease Prediction -->
+    <section class="feature-section">
+      <h3>🔬 Disease Prediction</h3>
+      <form id="diseaseForm">
+        <div class="input-group">
+          <label>Enter Crop Name:</label>
+          <input type="text" id="diseaseCrop" required placeholder="e.g., wheat, rice" />
+        </div>
+        <button type="submit">🔍 Predict Disease</button>
+      </form>
+      <div id="diseaseResult"></div>
+    </section>
+
+    <!-- 🧪 Fertilizer Recommendation -->
+    <section class="feature-section" style="margin-top: 40px;">
+      <h3>🌿 Fertilizer Recommendation</h3>
+      <form id="fertilizerForm">
+        <div class="input-group">
+          <label>Enter Crop Name:</label>
+          <input type="text" id="fertilizerCrop" required placeholder="e.g., wheat, cotton" />
+        </div>
+        <button type="submit">🌱 Suggest Fertilizer</button>
+      </form>
+      <div id="fertilizerResult"></div>
+    </section>
+  </main>
+
+  <!-- 🔁 JS Logic -->
+  <script>
+    // 🎯 Disease Prediction
+    document.getElementById("diseaseForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const crop = document.getElementById("diseaseCrop").value.trim();
+
+      fetch(`http://127.0.0.1:8000/predict_disease/${crop}`)
+        .then(res => res.json())
+        .then(data => {
+          const div = document.getElementById("diseaseResult");
+          if (data.possible_diseases) {
+            div.innerHTML = `
+              <p>🦠 <strong>Possible Disease(s) for ${crop}:</strong></p>
+              <ul>${data.possible_diseases.map(d => `<li>${d}</li>`).join("")}</ul>
+            `;
+          } else {
+            div.innerHTML = `<p>❌ ${data.message || "No disease data found."}</p>`;
+          }
+        })
+        .catch(() => {
+          document.getElementById("diseaseResult").innerText = "⚠️ Error retrieving data.";
+        });
+    });
+
+    // 🎯 Fertilizer Suggestion
+    const fertilizerMap = {
+      wheat: "Urea + DAP (Di-Ammonium Phosphate)",
+      rice: "Urea + Potash",
+      cotton: "Nitrogen + Potassium",
+      maize: "NPK (10:26:26)",
+    };
+
+    document.getElementById("fertilizerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const crop = document.getElementById("fertilizerCrop").value.trim().toLowerCase();
+      const result = fertilizerMap[crop];
+
+      document.getElementById("fertilizerResult").innerHTML = result
+        ? `🧪 <strong>Recommended Fertilizer:</strong> ${result}`
+        : `❌ No fertilizer recommendation found for "${crop}".`;
+    });
+  </script>
+
+  <!-- 🌐 Google Translate Script -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en' },
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script type="text/javascript"
+    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Krishi AI – Crop Predictor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<script>
+  // Session check – agar user login nahi hai toh login page redirect
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) {
+    window.location.href = "login.html"; // redirect to login
+  }
+</script>
+
+<!-- 🟢 HEADER START -->
+<header class="navbar">
+  <div class="left-header">
+    <img src="statics/images/logo.jpg" alt="Krishi AI Logo" class="logo" />
+    <div class="title">
+      <h1>Krishi AI</h1>
+      <p>Your Smart Agriculture Assistant</p>
+      <p>User: <span id="userSpan"></span></p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="disease.html">Disease</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <video autoplay muted loop class="header-video">
+    <source src="statics/images/krishi ai video.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</header>
+<!-- 🟢 HEADER END -->
+
+<!-- 🌍 LANGUAGE SWITCHER -->
+<div id="google_translate_element" style="text-align: right; padding: 10px;"></div>
+
+<!-- 🧠 MAIN START -->
+<main>
+  <form id="cropForm">
+    <div class="input-group">
+      <label>Soil Type:</label>
+      <input type="text" id="soilType" name="soilType" required placeholder="e.g., loamy, sandy" />
+    </div>
+
+    <div class="input-group">
+      <label>City:</label>
+      <input type="text" id="city" name="city" required placeholder="e.g., Jaipur" />
+    </div>
+
+    <div class="input-group">
+      <label>Season:</label>
+      <select id="season" name="season" required>
+        <option value="">Select</option>
+        <option value="Rabi">Rabi</option>
+        <option value="Kharif">Kharif</option>
+        <option value="Zaid">Zaid</option>
+      </select>
+    </div>
+
+    <button type="submit" class="predict-btn">🌾 Predict Best Crop for Your Land</button>
+    <button type="button" onclick="toggleDarkMode()">🌙</button>
+  </form>
+
+  <div id="result"></div>
+  <button onclick="logout()">Logout</button>
+</main>
+<!-- 🧠 MAIN END -->
+
+<!-- 🧠 JS Files -->
+<script src="home.js"></script>
+<script>
+document.getElementById("userSpan").textContent = loggedInUser;
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  window.location.href = "login.html";
+}
+</script>
+
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      { pageLanguage: 'en' },
+      'google_translate_element'
+    );
+  }
+</script>
+<script>
+document.getElementById("userSpan").textContent = loggedInUser;
+
+// Check for saved dark mode preference
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark-mode");
+}
+
+// 🌙 Dark Mode Toggle function
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  
+  // Save preference to localStorage
+  const isDarkMode = document.body.classList.contains("dark-mode");
+  localStorage.setItem("darkMode", isDarkMode);
+}
+
+function logout(){
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("darkMode"); // Also remove dark mode preference
+  window.location.href = "login.html";
+}
+</script>
+<script type="text/javascript"
+  src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+
+</body>
+</html>

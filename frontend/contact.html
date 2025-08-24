@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact – Krishi AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="navbar">
+  <div class="left-header">
+    <img src="statics/images/logo.jpg" alt="Krishi AI Logo" class="logo" />
+    <div class="title">
+      <h1>Krishi AI</h1>
+      <p>Your Smart Agriculture Assistant</p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="disease.html">Disease</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <video autoplay muted loop class="header-video">
+    <source src="statics/images/krishi ai video.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</header>
+<!-- 🌍 Language Switcher -->
+  <div id="google_translate_element" style="text-align: right; padding: 10px;"></div>
+
+
+
+  <main>
+  <h1>Contact Us</h1>
+  <form>
+    <label>Name:</label>
+    <input type="text" name="name" placeholder="Enter your name" required />
+
+    <label>Email:</label>
+    <input type="email" name="email" placeholder="Enter your email" required />
+
+    <label>Your Message:</label>
+    <textarea name="message" placeholder="Write your feedback or query here..." required></textarea>
+
+    <button type="submit">Send</button>
+    <div id="contactStatus"></div>
+  </form>
+</main>
+<script type="text/javascript">
+  function googleTranslateElementInit() {
+    new google.translate.TranslateElement(
+      { pageLanguage: 'en' },
+      'google_translate_element'
+    );
+  }
+</script>
+
+<script type="text/javascript"
+  src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+</script>
+
+</body>
+</html>

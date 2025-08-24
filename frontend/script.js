@@ -35,7 +35,10 @@ form.addEventListener("submit", async function (event) {
     const url = `http://127.0.0.1:8000/recommend_crop_auto/${soilType}/${city}/${season}`;
 
     try {
-      const response = await fetch(url);
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(url, {
+        headers: token ? { "Authorization": `Bearer ${token}` } : {}
+      });
       const data = await response.json();
 
       if (data.recommended_crops) {

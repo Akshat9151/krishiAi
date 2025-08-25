@@ -10,10 +10,16 @@
 
 <script>
   // Session check – agar user login nahi hai toh login page redirect
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (!loggedInUser) {
-    window.location.href = "login.html"; // redirect to login
+  async function ensureAuth(){
+    try {
+      const r = await fetch('http://127.0.0.1:8000/auth/whoami', {credentials:'include'});
+      if (r.status !== 200) { window.location.href = 'login.html'; return; }
+      const data = await r.json();
+      window._username = data.username;
+      document.getElementById('userSpan').textContent = data.username;
+    } catch(e){ window.location.href = 'login.html'; }
   }
+  ensureAuth();
 </script>
 
 <!-- 🟢 HEADER START -->
@@ -79,11 +85,11 @@
 <!-- 🧠 JS Files -->
 <script src="home.js"></script>
 <script>
-document.getElementById("userSpan").textContent = loggedInUser;
+// userSpan will be set by ensureAuth
 
-function logout(){
-  localStorage.removeItem("loggedInUser");
-  window.location.href = "login.html";
+async function logout(){
+  await fetch('http://127.0.0.1:8000/auth/logout', {method:'POST', credentials:'include'});
+  window.location.href = 'login.html';
 }
 </script>
 
@@ -96,7 +102,7 @@ function logout(){
   }
 </script>
 <script>
-document.getElementById("userSpan").textContent = loggedInUser;
+// userSpan will be set by ensureAuth
 
 // Check for saved dark mode preference
 if (localStorage.getItem("darkMode") === "true") {

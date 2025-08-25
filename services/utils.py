@@ -18,7 +18,7 @@ class DatabasePool:
             host = os.getenv("DB_HOST", "localhost")
             port = int(os.getenv("DB_PORT", "3306"))
             user = os.getenv("DB_USER", "root")
-            password = os.getenv("DB_PASSWORD", "password")
+            password = os.getenv("DB_PASSWORD", "IT@admin123456789")
             database = os.getenv("DB_NAME", "krishiAiDb")
             auth_plugin = os.getenv("DB_AUTH_PLUGIN", "mysql_native_password")
 

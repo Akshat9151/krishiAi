@@ -2,13 +2,18 @@
 const form = document.getElementById("cropForm");
 const resultDiv = document.getElementById("result");
 
-// Session check – agar user login nahi hai toh login page redirect
-const loggedInUser = localStorage.getItem("loggedInUser");
-if (!loggedInUser) {
-  window.location.href = "login.html"; // redirect to login
-} else {
-  document.getElementById("userSpan").textContent = loggedInUser;
-}
+// Session check via cookie-backed whoami
+(async function(){
+  try {
+    const r = await fetch('http://127.0.0.1:8000/auth/whoami', {credentials:'include'});
+    if (r.status !== 200) { window.location.href = 'login.html'; return; }
+    const data = await r.json();
+    const userSpan = document.getElementById("userSpan");
+    if (userSpan) { userSpan.textContent = data.username; }
+  } catch(e){
+    window.location.href = 'login.html';
+  }
+})();
 
 // Check for saved dark mode preference
 if (localStorage.getItem("darkMode") === "true") {
@@ -35,10 +40,7 @@ form.addEventListener("submit", async function (event) {
     const url = `http://127.0.0.1:8000/recommend_crop_auto/${soilType}/${city}/${season}`;
 
     try {
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(url, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {}
-      });
+      const response = await fetch(url, { credentials: 'include' });
       const data = await response.json();
 
       if (data.recommended_crops) {
@@ -103,10 +105,10 @@ function startVoiceInput(fieldName) {
 }
 
 // Logout function
-function logout() {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("darkMode"); // Also remove dark mode preference
-  window.location.href = "login.html";
+async function logout() {
+  await fetch('http://127.0.0.1:8000/auth/logout', {method:'POST', credentials:'include'});
+  localStorage.removeItem("darkMode");
+  window.location.href = 'login.html';
 }
 
 // 📩 Contact Form (agar hai page par)

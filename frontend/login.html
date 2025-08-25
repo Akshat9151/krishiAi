@@ -78,6 +78,7 @@
                 const res = await fetch("http://127.0.0.1:8000/auth/login", {
                     method: "POST",
                     headers: {"Content-Type": "application/json"},
+                    credentials: "include",
                     body: JSON.stringify({username, password})
                 });
                 
@@ -90,10 +91,7 @@
                     loginStatus.textContent = "Login successful! Redirecting...";
                     loginStatus.className = "success";
                     
-                    localStorage.setItem("loggedInUser", username);
-                    if (data.token) {
-                        localStorage.setItem("authToken", data.token);
-                    }
+                    // rely on http-only cookie, no localStorage for auth
                     
                     // Redirect after a brief delay
                     setTimeout(() => {

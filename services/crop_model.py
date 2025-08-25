@@ -1,27 +1,12 @@
-from fastapi import APIRouter
-
-router = APIRouter()
-
-@router.get("/recommend")
-def recommend_crop(soil: str, season: str):
-    # simple dummy logic
-    if soil == "clay" and season == "summer":
-        return {"crop": "Rice"}
-    elif soil == "sandy" and season == "winter":
-        return {"crop": "Wheat"}
-    return {"crop": "Maize"}
-# services/crop_model.py
-
-def predict_crop(nitrogen: float, phosphorus: float, potassium: float, ph: float, rainfall: float):
+def predict_crop(soil_type: str, season: str, location: str, temperature: float, humidity: float) -> str:
     """
-    Simple crop prediction logic (dummy example).
-    Aap isko apne ML model se replace kar sakte ho.
+    Simple placeholder logic aligned with routes.CropRequest fields.
+    Replace with real ML model later.
     """
-    if nitrogen > 50 and rainfall > 200:
+    if soil_type.lower() == "clay" and season.lower() == "monsoon" and humidity > 70:
         return "Rice"
-    elif phosphorus > 40:
+    if soil_type.lower() == "sandy" and season.lower() == "winter" and temperature < 20:
         return "Wheat"
-    elif potassium > 30 and ph >= 6:
-        return "Sugarcane"
-    else:
+    if soil_type.lower() == "loam" and season.lower() == "summer" and 20 <= temperature <= 30:
         return "Maize"
+    return "Sugarcane"

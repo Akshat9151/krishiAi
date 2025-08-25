@@ -1,13 +1,15 @@
 # auth.py
 import os
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response, Request, Depends
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from passlib.context import CryptContext
 import jwt
 from .utils import DatabasePool
 
 router = APIRouter(prefix="/auth")
+security = HTTPBearer(auto_error=False)
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 JWT_SECRET = os.getenv("JWT_SECRET", "dev_secret_change_me")
@@ -33,6 +35,33 @@ def _create_access_token(username: str) -> str:
     payload = {"sub": username, "exp": expire}
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
     return token
+
+
+def _verify_token(token: str) -> str:
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return username
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+def get_current_user(request: Request):
+    """Get current user from JWT token in cookie or Authorization header"""
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    return _verify_token(token)
 
 
 # REGISTER
@@ -70,7 +99,7 @@ def register(user: User):
 
 # LOGIN
 @router.post("/login")
-def login(user: User):
+def login(user: User, response: Response):
     try:
         conn = DatabasePool.get_connection()
         try:
@@ -83,7 +112,18 @@ def login(user: User):
             if not _verify_password(user.password, password_hash):
                 raise HTTPException(status_code=401, detail="Incorrect password ❌")
             token = _create_access_token(user.username)
-            return {"status": "success", "message": f"Welcome {user.username} 🌱", "token": token}
+            
+            # Set HTTP-only cookie
+            response.set_cookie(
+                key="access_token",
+                value=token,
+                httponly=True,
+                secure=False,  # Set to True in production with HTTPS
+                samesite="lax",
+                max_age=JWT_EXPIRE_MINUTES * 60
+            )
+            
+            return {"status": "success", "message": f"Welcome {user.username} 🌱", "username": user.username}
         finally:
             cursor.close()
             conn.close()
@@ -99,4 +139,28 @@ def login(user: User):
         if not _verify_password(user.password, stored_hash):
             raise HTTPException(status_code=401, detail="Incorrect password ❌")
         token = _create_access_token(user.username)
-        return {"status": "success", "message": f"Welcome {user.username} 🌱 (memory)", "token": token}
+        
+        # Set HTTP-only cookie
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True,
+            secure=False,  # Set to True in production with HTTPS
+            samesite="lax",
+            max_age=JWT_EXPIRE_MINUTES * 60
+        )
+        
+        return {"status": "success", "message": f"Welcome {user.username} 🌱 (memory)", "username": user.username}
+
+
+# LOGOUT
+@router.post("/logout")
+def logout(response: Response):
+    response.delete_cookie("access_token")
+    return {"status": "success", "message": "Logged out successfully"}
+
+
+# GET CURRENT USER INFO
+@router.get("/me")
+def get_user_info(current_user: str = Depends(get_current_user)):
+    return {"username": current_user, "authenticated": True}

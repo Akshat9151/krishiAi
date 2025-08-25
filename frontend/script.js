@@ -2,13 +2,29 @@
 const form = document.getElementById("cropForm");
 const resultDiv = document.getElementById("result");
 
-// Session check – agar user login nahi hai toh login page redirect
-const loggedInUser = localStorage.getItem("loggedInUser");
-if (!loggedInUser) {
-  window.location.href = "login.html"; // redirect to login
-} else {
-  document.getElementById("userSpan").textContent = loggedInUser;
+// Session check – check if user is authenticated via backend
+async function checkAuthentication() {
+  try {
+    const response = await fetch("http://127.0.0.1:8000/auth/me", {
+      credentials: "include"  // Include cookies
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      document.getElementById("userSpan").textContent = data.username;
+    } else {
+      // Not authenticated, redirect to login
+      window.location.href = "login.html";
+    }
+  } catch (error) {
+    // Error checking auth, redirect to login
+    console.error("Auth check failed:", error);
+    window.location.href = "login.html";
+  }
 }
+
+// Run authentication check
+checkAuthentication();
 
 // Check for saved dark mode preference
 if (localStorage.getItem("darkMode") === "true") {
@@ -35,9 +51,8 @@ form.addEventListener("submit", async function (event) {
     const url = `http://127.0.0.1:8000/recommend_crop_auto/${soilType}/${city}/${season}`;
 
     try {
-      const token = localStorage.getItem("authToken");
       const response = await fetch(url, {
-        headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        credentials: "include"  // Include cookies for authentication
       });
       const data = await response.json();
 
@@ -103,9 +118,17 @@ function startVoiceInput(fieldName) {
 }
 
 // Logout function
-function logout() {
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("darkMode"); // Also remove dark mode preference
+async function logout() {
+  try {
+    await fetch("http://127.0.0.1:8000/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+  // Clear dark mode preference and redirect
+  localStorage.removeItem("darkMode");
   window.location.href = "login.html";
 }
 
@@ -122,6 +145,7 @@ if (contactForm) {
     fetch("http://127.0.0.1:8000/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ name, email, message })
     })
       .then(res => res.json())

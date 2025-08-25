@@ -1,9 +1,9 @@
-fastapi
-uvicorn
-requests
-pandas
-python-dotenv
-mysql-connector-python
-passlib[bcrypt]
-PyJWT
+fastapi>=0.112
+uvicorn[standard]>=0.30
+requests>=2.31
+pandas>=2.1
+python-dotenv>=1.0
+mysql-connector-python>=9.0
+passlib>=1.7.4
+PyJWT>=2.8
 
